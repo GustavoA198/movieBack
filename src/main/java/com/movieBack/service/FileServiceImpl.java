@@ -6,29 +6,36 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 @Service
 public class FileServiceImpl implements FileService {
 
     @Override
     public String uploadFile(String path, MultipartFile file) throws IOException {
-        // get name of the file
+        // Get the original file name
         String fileName = file.getOriginalFilename();
-
-        // to get the file path
-        String filePath = path + File.separator + fileName;
-
-        // create file object
-        File f = new File(path);
-        if(!f.exists()) {
-            f.mkdir();
+        if (fileName == null || fileName.isEmpty()) {
+            throw new IOException("Invalid file name");
         }
 
-        // copy the file or upload file to the path
-        Files.copy(file.getInputStream(), Paths.get(filePath));
+        // Define the full file path
+        String filePath = path + File.separator + fileName;
+
+        // Ensure the directory exists
+        File directory = new File(path);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Use mkdirs() to create parent directories if needed
+        }
+
+        // Copy the file safely
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+        }
 
         return fileName;
     }
+
 
     @Override
     public InputStream getResourceFile(String path, String fileName) throws FileNotFoundException {
