@@ -3,6 +3,7 @@ package com.movieBack.auth.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String username;
 
-    @NotBlank(message = "The Telephone field can't be blank")
+    @NotNull(message = "The Telephone field can't be blank")
     @Column(unique = true)
     private Number telephone;
 
